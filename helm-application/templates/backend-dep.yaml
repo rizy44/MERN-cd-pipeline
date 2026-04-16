@@ -57,10 +57,20 @@ spec:
             - name: http
               containerPort: {{ .Values.backend.port }}
               protocol: TCP
-          {{- with .Values.backend.env }}
           env:
+          {{- with .Values.backend.env }}
 {{ toYaml . | nindent 12 }}
           {{- end }}
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name | default "mern-secret" }}
+                  key: mongo-uri
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name | default "mern-secret" }}
+                  key: jwt-secret
           {{- with .Values.backend.livenessProbe }}
           livenessProbe:
 {{ toYaml . | nindent 12 }}

@@ -49,6 +49,8 @@ prometheus:
 
 alertmanager:
   alertmanagerSpec:
+    secrets:
+      - alertmanager-slack-secret
     storage:
       volumeClaimTemplate:
         spec:

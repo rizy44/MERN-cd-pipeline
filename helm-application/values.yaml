@@ -47,16 +47,15 @@ backend:
   env:
     - name: PORT
       value: "4000"
-    - name: MONGO_URI
-      valueFrom:
-        secretKeyRef:
-          name: mern-secret
-          key: mongo-uri
-    - name: JWT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: mern-secret
-          key: jwt-secret
+
+secret:
+  create: true
+  name: mern-secret
+  type: Opaque
+  data:
+    mongoUri: ""
+    jwtSecret: ""
+    slackWebhookUrl: ""
 
 service:
   backend:

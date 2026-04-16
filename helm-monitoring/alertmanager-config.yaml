@@ -2,7 +2,7 @@ alertmanager:
   config:
     global:
       resolve_timeout: 5m
-      slack_api_url: '${SLACK_WEBHOOK_URL}'
+      slack_api_url_file: '/etc/alertmanager/secrets/alertmanager-slack-secret/slack-webhook-url'
 
     route:
       group_by: ['layer', 'alertname', 'namespace', 'service']
