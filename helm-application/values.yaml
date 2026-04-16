@@ -48,15 +48,6 @@ backend:
     - name: PORT
       value: "4000"
 
-secret:
-  create: true
-  name: mern-secret
-  type: Opaque
-  data:
-    mongoUri: ""
-    jwtSecret: ""
-    slackWebhookUrl: ""
-
 service:
   backend:
     name: backend-service
