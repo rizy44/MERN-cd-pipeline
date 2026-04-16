@@ -23,7 +23,7 @@ backend:
   serviceName: backend-service
   image:
     repository: rizy44/web-app-mern
-    tag: backend-v2
+    tag: backend-1c53e28be8c6f3d39175d80e8281f9286610df64
     pullPolicy: IfNotPresent
   readinessProbe:
     httpGet:
@@ -87,7 +87,7 @@ frontend:
 
   image:
     repository: rizy44/web-app-mern
-    tag: frontend-v2
+    tag: frontend-1c53e28be8c6f3d39175d80e8281f9286610df64
     pullPolicy: IfNotPresent
   readinessProbe:
     httpGet:
