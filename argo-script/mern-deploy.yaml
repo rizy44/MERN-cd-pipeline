@@ -10,6 +10,6 @@ syncPolicy:
   automated:
     prune: true
     selfHeal: true
-    enabled: true
+    enabled: false
   syncOptions:
     - CreateNamespace=true

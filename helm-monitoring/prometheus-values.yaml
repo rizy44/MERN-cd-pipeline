@@ -2,7 +2,7 @@
 prometheus:
   prometheusSpec:
     # Keep this null so chart templates omit the field on clusters with older CRD schema.
-    enableOTLPReceiver: null
+    enableOTLPReceiver: false
 
     # Resource limits
     resources:
