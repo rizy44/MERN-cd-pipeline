@@ -1,0 +1,15 @@
+project: default
+source:
+  repoURL: https://github.com/rizy44/MERN-cd-pipeline
+  path: helm-application
+  targetRevision: HEAD
+destination:
+  server: https://kubernetes.default.svc
+  namespace: mern-app
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    enabled: false
+  syncOptions:
+    - CreateNamespace=true

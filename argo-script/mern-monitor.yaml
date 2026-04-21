@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mern-monitoring
+  namespace: argocd
+spec:
+  project: default
+  sources:
+
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 83.4.2
+      helm:
+        releaseName: prometheus
+        valueFiles:
+          # $values trỏ đến gốc của Repo ở Source 2
+          - $values/helm-monitoring/prometheus-values.yaml
+          - $values/helm-monitoring/grafana-values.yaml
+          - $values/helm-monitoring/alertmanager-values.yaml
+
+
+    - repoURL: https://github.com/rizy44/MERN-cd-pipeline
+      targetRevision: main
+      ref: values # Định danh cho repo này để Source 1 sử dụng
+
+    - repoURL: https://github.com/rizy44/MERN-cd-pipeline
+      targetRevision: main
+      path: helm-monitoring
+      directory:
+        recurse: false
+        include: service-monitor.yaml
+
+    - repoURL: https://github.com/rizy44/MERN-cd-pipeline
+      targetRevision: main
+      path: helm-monitoring
+      directory:
+        recurse: false
+        include: custom-alerts.yaml
+
+    - repoURL: https://github.com/rizy44/MERN-cd-pipeline
+      targetRevision: main
+      path: .
+      directory:
+        recurse: false
+        include: k8s-secrets.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+        
