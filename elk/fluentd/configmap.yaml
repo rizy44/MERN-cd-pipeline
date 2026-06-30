@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: kube-system
+data:
+  fluent.conf: |
+    # Chỉ định nguồn log 
+    <source>
+      @type tail
+      path /var/log/containers/*.log 
+      pos_file /var/log/fluentd-containers.log.pos
+      tag kubernetes.*
+      read_from_head true
+      <parse>
+        @type cri # parser 
+      </parse>
+    </source>
+
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+      de_dot true
+      de_dot_separator _
+      skip_namespace_metadata true
+    </filter>
+
+    # Chỉ lấy log từ namespace mern-app.
+    <filter kubernetes.**>
+      @type grep
+      <regexp>
+        key $.kubernetes.namespace_name
+        pattern ^(mern-app)$
+      </regexp>
+    </filter>
+
+    # Lấy log từ label app: backend và app:frontend
+    <filter kubernetes.**>
+      @type grep
+      <regexp>
+        key $.kubernetes.labels.app
+        pattern ^(backend|frontend)$
+      </regexp>
+    </filter>
+
+    # Loại bỏ các trường không cần thiết để giảm kích thước log trước khi gửi đến Elasticsearch.
+    <filter kubernetes.**>
+      @type record_transformer
+      remove_keys $.kubernetes.labels,$.kubernetes.namespace_labels
+    </filter>
+
+    <match kubernetes.**>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+      log_es_400_reason true
+      logstash_format true
+      logstash_prefix k8s-logs-mern-v2
+
+      <buffer>
+        @type file
+        path /var/log/fluentd-buffers/kubernetes.system.buffer
+        flush_mode interval
+        retry_type exponential_backoff
+        flush_thread_count 2
+        flush_interval 5s
+        retry_forever
+        retry_max_interval 30
+        chunk_limit_size 2M
+        queue_limit_length 8
+        overflow_action block
+      </buffer>
+    </match>
